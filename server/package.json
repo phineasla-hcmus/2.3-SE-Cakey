@@ -1,4 +1,5 @@
 {
+  "name": "cakey-server",
   "dependencies": {
     "express": "^4.17.1",
     "parse-server": "^4.5.0"
