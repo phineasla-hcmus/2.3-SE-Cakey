@@ -38,6 +38,10 @@ const config = {
                 "Hi,<p>You requested to reset your password for <b>{{var:appName}}</b>.</p><p>Please, click here to set a new password: {{var:link}}</p>",
         },
     },
+    passwordPolicy: {
+        //optional setting to set a validity duration for password reset links (in seconds)
+        resetTokenValidityDuration: 5 * 60,
+    },
 };
 
 const app = express();
