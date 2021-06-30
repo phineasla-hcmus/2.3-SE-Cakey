@@ -20,6 +20,22 @@ const config = {
         classNames: ["Posts", "Comments"], // List of classes to support for query subscriptions
     },
     appName: "Cakey",
+    emailAdapter: {
+        module: "parse-server-mailjet-adapter",
+        options: {
+            apiKey: process.env.MAILJET_API_KEY,
+            apiSecret: process.env.MAILJET_API_SECRET,
+            // The email to send Mailjet templates bug reports to
+            apiErrorEmail: process.env.MAILJET_REPORT_EMAIL,
+            fromEmail: process.env.SENDER_EMAIL,
+            fromName: process.env.SENDER_NAME,
+            passwordResetSubject: "Reset your password",
+            passwordResetTextPart:
+                "Hi,\n\nYou requested to reset your password for {{var:appName}}.\n\nPlease, click here to set a new password: {{var:link}}",
+            passwordResetHtmlPart:
+                "Hi,<p>You requested to reset your password for <b>{{var:appName}}</b>.</p><p>Please, click here to set a new password: {{var:link}}</p>",
+        },
+    },
 };
 
 const app = express();
