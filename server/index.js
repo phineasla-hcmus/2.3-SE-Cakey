@@ -60,6 +60,7 @@ const dashboardConfig = {
             pass: "popcorn.se",
         },
     ],
+    useEncryptedPasswords: false,
 };
 
 const app = express();
