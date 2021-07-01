@@ -1,10 +1,12 @@
 const express = require("express");
 const ParseServer = require("parse-server").ParseServer;
+const ParseDashboard = require("parse-dashboard");
 const path = require("path");
 const args = process.argv || [];
 
 const databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
-const mountPath = process.env.PARSE_MOUNT || "/parse";
+const parseMountPath = process.env.PARSE_MOUNT || "/parse";
+const dashboardMountPath = process.env.DASHBOARD_MOUNT || "/dashboard";
 
 if (!databaseUri) {
     console.log("DATABASE_URI not specified, falling back to localhost.");
@@ -16,8 +18,7 @@ const config = {
     appId: process.env.APP_ID || "cakeySE",
     masterKey: process.env.MASTER_KEY || "", //Add your master key here. Keep it secret!
     serverURL: process.env.SERVER_URL || "http://localhost:1337/parse", // Don't forget to change to https if needed,
-    publicServerURL:
-        process.env.PUBLIC_SERVER_URL || "http://localhost:1337/parse",
+    publicServerURL: process.env.PUBLIC_SERVER_URL || "http://localhost:1337",
     liveQuery: {
         classNames: ["Posts", "Comments"], // List of classes to support for query subscriptions
     },
@@ -44,12 +45,27 @@ const config = {
     },
 };
 
+const dashboardConfig = {
+    apps: [
+        {
+            appName: process.env.APP_NAME || "Cakey",
+            appId: process.env.APP_ID || "cakeySE",
+            masterKey: process.env.MASTER_KEY || "",
+            serverURL: process.env.SERVER_URL || "http://localhost:1337/parse",
+        },
+    ],
+};
+
 const app = express();
 // Serve static assets from the /public folder
 app.use("/public", express.static(path.join(__dirname, "/public")));
 
 const api = new ParseServer(config);
-app.use(mountPath, api);
+const dashboard = new ParseDashboard(dashboardConfig, {
+    allowInsecureHTTP: false,
+});
+app.use(parseMountPath, api);
+app.use(dashboardMountPath, dashboard);
 
 // Parse Server plays nicely with the rest of your web routes
 app.get("/", function(req, res) {
