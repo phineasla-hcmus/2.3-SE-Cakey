@@ -54,6 +54,12 @@ const dashboardConfig = {
             serverURL: process.env.SERVER_URL || "http://localhost:1337/parse",
         },
     ],
+    users: [
+        {
+            user: "admin",
+            pass: "popcorn.se",
+        },
+    ],
 };
 
 const app = express();
