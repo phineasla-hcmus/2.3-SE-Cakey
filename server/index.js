@@ -5,14 +5,18 @@ const path = require("path");
 const args = process.argv || [];
 const fs = require("fs");
 
-// const localConfig = require("dotenv").parse(fs.readFileSync(".env"));
-// for (const i in localConfig) {
-//     if (i === undefined) {
-//         process.env[i] = localConfig[i];
-//     }
-// }
+console.log(__dirname + "/.env");
 
-console.log(require("dotenv").config({ path: __dirname + "/.env" }));
+const localConfig = require("dotenv").parse(
+    fs.readFileSync(__dirname + "/.env")
+);
+for (const i in localConfig) {
+    if (i === undefined) {
+        process.env[i] = localConfig[i];
+    }
+}
+
+// console.log(require("dotenv").config({ path: __dirname + "/.env" }));
 
 const databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
 const parseMountPath = process.env.PARSE_MOUNT || "/parse";
