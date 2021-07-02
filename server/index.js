@@ -32,7 +32,7 @@ const config = {
             fromEmail: process.env.SENDER_EMAIL,
             fromName: process.env.SENDER_NAME,
             passwordResetSubject: "Reset your password",
-            passwordResetHtmlPart: fs.readFileSync("email/password_reset.html"),
+            passwordResetHtmlPart: "test",
         },
     },
     passwordPolicy: {
