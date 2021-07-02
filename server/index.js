@@ -87,7 +87,7 @@ app.get("/test", function(req, res) {
 });
 
 const port = process.env.PORT || 1337;
-const httpServer = require("http").createServer(app);
+const httpServer = require("https").createServer(app);
 httpServer.listen(port, function() {
     console.log("Cakey server running on port " + port + ".");
 });
