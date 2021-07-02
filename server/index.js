@@ -14,6 +14,13 @@ if (!databaseUri) {
     console.log("DATABASE_URI not specified, falling back to localhost.");
 }
 
+const appConfig = {
+    appName: process.env.APP_NAME,
+    appId: process.env.APP_ID,
+    masterKey: process.env.MASTER_KEY,
+    serverURL: process.env.SERVER_URL,
+};
+
 const config = {
     databaseURI: databaseUri || "mongodb://localhost:27017/dev",
     cloud: process.env.CLOUD_CODE_MAIN || __dirname + "/cloud/main.js",
@@ -48,14 +55,7 @@ const config = {
 };
 
 const dashboardConfig = {
-    apps: [
-        {
-            appName: process.env.APP_NAME || "Cakey",
-            appId: process.env.APP_ID || "cakeySE",
-            masterKey: process.env.MASTER_KEY || "",
-            serverURL: process.env.SERVER_URL || "http://localhost:1337/parse",
-        },
-    ],
+    apps: [...appConfig],
     users: [
         {
             user: process.env.DASHBOARD_USER_ID,
