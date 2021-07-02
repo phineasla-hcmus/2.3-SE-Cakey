@@ -3,20 +3,8 @@ const ParseServer = require("parse-server").ParseServer;
 const ParseDashboard = require("parse-dashboard");
 const path = require("path");
 const args = process.argv || [];
-const fs = require("fs");
 
-console.log(path.join(__dirname + "/.env"));
-
-const localConfig = require("dotenv").parse(
-    fs.readFileSync(path.join(__dirname + "/.env"))
-);
-for (const i in localConfig) {
-    if (i === undefined) {
-        process.env[i] = localConfig[i];
-    }
-}
-
-// console.log(require("dotenv").config({ path: __dirname + "/.env" }));
+require("dotenv").config();
 
 const databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
 const parseMountPath = process.env.PARSE_MOUNT || "/parse";
@@ -34,10 +22,7 @@ const appConfig = {
 };
 
 const config = {
-    appName: process.env.APP_NAME,
-    appId: process.env.APP_ID,
-    masterKey: process.env.MASTER_KEY,
-    serverURL: process.env.SERVER_URL,
+    ...appConfig,
     publicServerURL: process.env.PUBLIC_SERVER_URL,
     databaseURI: process.env.DATABASE_URI,
     cloud: process.env.CLOUD_CODE_MAIN || __dirname + "/cloud/main.js",
@@ -68,20 +53,11 @@ const config = {
 };
 
 const dashboardConfig = {
-    apps: [
-        {
-            appName: process.env.APP_NAME,
-            appId: process.env.APP_ID,
-            masterKey: process.env.MASTER_KEY,
-            serverURL: process.env.SERVER_URL,
-        },
-    ],
+    apps: [{ ...appConfig }],
     users: [
         {
-            // user: process.env.DASHBOARD_USER_ID,
-            // pass: process.env.DASHBOARD_USER_PASSWORD,
-            user: "admin",
-            pass: "cakey.popcorn.se",
+            user: process.env.DASHBOARD_USER_ID,
+            pass: process.env.DASHBOARD_USER_PASSWORD,
         },
     ],
     useEncryptedPasswords: false,
