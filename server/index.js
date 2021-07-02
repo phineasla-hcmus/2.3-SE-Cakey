@@ -22,7 +22,10 @@ const appConfig = {
 };
 
 const config = {
-    ...appConfig,
+    appName: process.env.APP_NAME,
+    appId: process.env.APP_ID,
+    masterKey: process.env.MASTER_KEY,
+    serverURL: process.env.SERVER_URL,
     publicServerURL: process.env.PUBLIC_SERVER_URL,
     databaseURI: process.env.DATABASE_URI,
     cloud: process.env.CLOUD_CODE_MAIN || __dirname + "/cloud/main.js",
