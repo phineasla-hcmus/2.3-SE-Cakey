@@ -38,15 +38,11 @@ const config = {
             apiErrorEmail: process.env.MAILJET_REPORT_EMAIL,
             fromEmail: process.env.SENDER_EMAIL,
             fromName: process.env.SENDER_NAME,
-            passwordResetSubject: "Reset your password",
-            passwordResetTextPart:
-                "Hi,\n\nYou requested to reset your password for {{var:appName}}.\n\nPlease, click here to set a new password: {{var:link}}",
-            passwordResetHtmlPart:
-                "Hi,<p>You requested to reset your password for <b>{{var:appName}}</b>.</p><p>Please, click here to set a new password: {{var:link}}</p>",
+            passwordResetTemplateId: 3019641,
         },
     },
     passwordPolicy: {
-        //optional setting to set a validity duration for password reset links (in seconds)
+        // Optional setting to set a validity duration for password reset links (in seconds)
         resetTokenValidityDuration: 5 * 60,
     },
 };
