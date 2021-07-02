@@ -77,6 +77,8 @@ const dashboardConfig = {
     trustProxy: 1,
 };
 
+console.log(config);
+
 const api = new ParseServer(config);
 const dashboard = new ParseDashboard(dashboardConfig);
 
