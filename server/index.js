@@ -3,9 +3,9 @@ const ParseServer = require("parse-server").ParseServer;
 const ParseDashboard = require("parse-dashboard");
 const path = require("path");
 const args = process.argv || [];
-const fs = require("fs");
+// const fs = require("fs");
 
-require("dotenv").config();
+// require("dotenv").config();
 
 const globalConfig = {
     appId: process.env.APP_ID,
