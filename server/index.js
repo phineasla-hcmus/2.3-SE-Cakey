@@ -55,7 +55,7 @@ const config = {
 };
 
 const dashboardConfig = {
-    apps: [...appConfig],
+    apps: [{ ...appConfig }],
     users: [
         {
             user: process.env.DASHBOARD_USER_ID,
