@@ -16,7 +16,12 @@ Parse.Cloud.beforeSave("Test", () => {
 Parse.Cloud.afterSave(Parse.User, (request) => {
     // https://stackoverflow.com/questions/53325756/parse-server-cloud-code-aftersave-trigger
     if (!request.original) {
-        console.log("object: ", request.object);
-        console.log("user:", request.user);
+        const userId = request.object.id;
+        const query = new Parse.Query(Parse.User);
+        query.get(userId, { useMasterKey: true }).then(function(user) {
+            user.set("level", 0);
+            user.set("exp", 0);
+            user.save();
+        });
     }
 });
