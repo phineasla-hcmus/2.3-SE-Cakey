@@ -21,7 +21,7 @@ Parse.Cloud.afterSave(Parse.User, (request) => {
         query.get(userId, { useMasterKey: true }).then(function(user) {
             user.set("level", 1);
             user.set("exp", 0);
-            user.save({ useMasterKey: true });
+            user.save(null, { useMasterKey: true });
         });
     }
 });
