@@ -16,15 +16,17 @@ Parse.Cloud.beforeSave("Test", () => {
 Parse.Cloud.afterSave(Parse.User, async (request) => {
     // https://stackoverflow.com/questions/53325756/parse-server-cloud-code-aftersave-trigger
     if (!request.original) {
-        const userQuery = new Parse.Query(Parse.User).get;
-        const iconQuery = new Parse.Query("ProfileIcon").get;
+        const userQuery = new Parse.Query(Parse.User);
+        const iconQuery = new Parse.Query("ProfileIcon");
         const config = await Parse.Config.get();
         const userId = request.object.id;
         const iconId = config.get("defaultProfileIcon");
+
+        console.log("ICON FOUND: ", iconId);
         try {
             let [user, icon] = await Promise.all([
-                userQuery(userId, { useMasterKey: true }),
-                iconQuery(iconId),
+                userQuery.get(userId, { useMasterKey: true }),
+                iconQuery.get(iconId),
             ]);
             user.set("level", 1);
             user.set("exp", 0);
