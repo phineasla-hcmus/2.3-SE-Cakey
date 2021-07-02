@@ -5,10 +5,10 @@ const path = require("path");
 const args = process.argv || [];
 const fs = require("fs");
 
-console.log(__dirname + "/.env");
+console.log(path.join(__dirname + "/.env"));
 
 const localConfig = require("dotenv").parse(
-    fs.readFileSync(__dirname + "/.env")
+    fs.readFileSync(path.join(__dirname + "/.env"))
 );
 for (const i in localConfig) {
     if (i === undefined) {
