@@ -45,7 +45,7 @@ const config = {
             //     "Hi,\n\nYou requested to reset your password for {{var:appName}}.\n\nPlease, click here to set a new password: {{var:link}}",
             passwordResetHtmlPart: fs.readFileSync(
                 __dirname + "/email/password_reset.html"
-            ),
+            ).toString(),
         },
     },
     passwordPolicy: {
@@ -53,6 +53,8 @@ const config = {
         resetTokenValidityDuration: 5 * 60,
     },
 };
+
+console.log(config.emailAdapter.options.passwordResetHtmlPart);
 
 const dashboardConfig = {
     apps: [{ ...appConfig }],
