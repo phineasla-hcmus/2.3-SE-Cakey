@@ -4,7 +4,7 @@ const ParseDashboard = require("parse-dashboard");
 const path = require("path");
 const args = process.argv || [];
 const fs = require("fs");
-require("dotenv").config();
+// require("dotenv").config();
 
 const databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
 const parseMountPath = process.env.PARSE_MOUNT || "/parse";
