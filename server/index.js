@@ -38,12 +38,12 @@ const config = {
             apiErrorEmail: process.env.MAILJET_REPORT_EMAIL,
             fromEmail: process.env.SENDER_EMAIL,
             fromName: process.env.SENDER_NAME,
-            // passwordResetTemplateId: 3019641,
-            passwordResetSubject: "Reset your password",
-            passwordResetTextPart:
-                "Hi,\n\nYou requested to reset your password for {{var:appName}}.\n\nPlease, click here to set a new password: {{var:link}}",
-            passwordResetHtmlPart:
-                "Hi,<p>You requested to reset your password for <b>{{var:appName}}</b>.</p><p>Please, click here to set a new password: {{var:link}}</p>",
+            passwordResetTemplateId: 3019641,
+            // passwordResetSubject: "Reset your password",
+            // passwordResetTextPart:
+            //     "Hi,\n\nYou requested to reset your password for {{var:appName}}.\n\nPlease, click here to set a new password: {{var:link}}",
+            // passwordResetHtmlPart:
+            //     "Hi,<p>You requested to reset your password for <b>{{var:appName}}</b>.</p><p>Please, click here to set a new password: {{var:link}}</p>",
         },
     },
     passwordPolicy: {
