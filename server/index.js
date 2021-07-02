@@ -39,13 +39,11 @@ const config = {
             apiErrorEmail: process.env.MAILJET_REPORT_EMAIL,
             fromEmail: process.env.SENDER_EMAIL,
             fromName: process.env.SENDER_NAME,
-            // passwordResetTemplateId: 3019641,
             passwordResetSubject: "Reset your password for {{var:appName}}",
-            // passwordResetTextPart:
-            //     "Hi,\n\nYou requested to reset your password for {{var:appName}}.\n\nPlease, click here to set a new password: {{var:link}}",
             passwordResetHtmlPart: fs.readFileSync(
-                __dirname + "/email/password_reset.html"
-            ).toString(),
+                __dirname + "/email/password_reset.html",
+                "utf-8"
+            ),
         },
     },
     passwordPolicy: {
@@ -53,8 +51,6 @@ const config = {
         resetTokenValidityDuration: 5 * 60,
     },
 };
-
-console.log(config.emailAdapter.options.passwordResetHtmlPart);
 
 const dashboardConfig = {
     apps: [{ ...appConfig }],
