@@ -3,6 +3,7 @@ const ParseServer = require("parse-server").ParseServer;
 const ParseDashboard = require("parse-dashboard");
 const path = require("path");
 const args = process.argv || [];
+const fs = require("fs");
 
 const databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
 const parseMountPath = process.env.PARSE_MOUNT || "/parse";
@@ -69,9 +70,7 @@ const app = express();
 app.use("/public", express.static(path.join(__dirname, "/public")));
 
 const api = new ParseServer(config);
-const dashboard = new ParseDashboard(dashboardConfig, {
-    allowInsecureHTTP: true,
-});
+const dashboard = new ParseDashboard(dashboardConfig);
 app.use(parseMountPath, api);
 app.use(dashboardMountPath, dashboard);
 
@@ -87,7 +86,13 @@ app.get("/test", function(req, res) {
 });
 
 const port = process.env.PORT || 1337;
-const httpServer = require("https").createServer(app);
+const httpServer = require("https").createServer(
+    {
+        key: fs.readFileSync("server.key"),
+        cert: fs.readFileSync("server.cert"),
+    },
+    app
+);
 httpServer.listen(port, function() {
     console.log("Cakey server running on port " + port + ".");
 });
