@@ -12,7 +12,7 @@ const fs = require("fs");
 //     }
 // }
 
-console.log(require("dotenv").config({ path: __dirname + ".env" }));
+console.log(require("dotenv").config({ path: __dirname + "/.env" }));
 
 const databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
 const parseMountPath = process.env.PARSE_MOUNT || "/parse";
