@@ -22,13 +22,10 @@ const appConfig = {
 };
 
 const config = {
-    databaseURI: databaseUri || "mongodb://localhost:27017/dev",
+    ...appConfig,
+    publicServerURL: process.env.PUBLIC_SERVER_URL,
+    databaseURI: process.env.DATABASE_URI,
     cloud: process.env.CLOUD_CODE_MAIN || __dirname + "/cloud/main.js",
-    appId: process.env.APP_ID || "cakeySE",
-    appName: process.env.APP_NAME || "Cakey",
-    masterKey: process.env.MASTER_KEY || "", //Add your master key here. Keep it secret!
-    serverURL: process.env.SERVER_URL || "http://localhost:1337/parse", // Don't forget to change to https if needed,
-    publicServerURL: process.env.PUBLIC_SERVER_URL || "http://localhost:1337",
     liveQuery: {
         classNames: ["Posts", "Comments"], // List of classes to support for query subscriptions
     },
