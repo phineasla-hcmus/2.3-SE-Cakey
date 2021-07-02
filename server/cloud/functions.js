@@ -19,8 +19,8 @@ Parse.Cloud.afterSave(Parse.User, (request) => {
         const userQuery = new Parse.Query(Parse.User);
         const iconQuery = new Parse.Query("ProfileIcon");
         const userId = request.object.id;
+        const iconId = (await Parse.Config.get()).get("defaultProfileIcon");
         try {
-            const iconId = (await Parse.Config.get()).get("defaultProfileIcon");
             let user = await userQuery.get(userId, { useMasterKey: true });
             user.set("level", 1);
             user.set("exp", 0);
