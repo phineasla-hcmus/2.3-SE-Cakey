@@ -65,20 +65,19 @@ const dashboardConfig = {
     trustProxy: 1,
 };
 
-const app = express();
-// Serve static assets from the /public folder
-app.use("/public", express.static(path.join(__dirname, "/public")));
-
 const api = new ParseServer(config);
 const dashboard = new ParseDashboard(dashboardConfig);
+
+const app = express();
 app.use(parseMountPath, api);
 app.use(dashboardMountPath, dashboard);
+// Serve static assets from the /public folder
+app.use("/public", express.static(path.join(__dirname, "/public")));
 
 // Parse Server plays nicely with the rest of your web routes
 app.get("/", function(req, res) {
     res.status(200).send("Server is live");
 });
-
 // There will be a test page available on the /test path of your server url
 // Remove this before launching your app
 app.get("/test", function(req, res) {
@@ -86,13 +85,7 @@ app.get("/test", function(req, res) {
 });
 
 const port = process.env.PORT || 1337;
-const httpServer = require("https").createServer(
-    {
-        key: fs.readFileSync("server.key"),
-        cert: fs.readFileSync("server.cert"),
-    },
-    app
-);
+const httpServer = require("http").createServer(app);
 httpServer.listen(port, function() {
     console.log("Cakey server running on port " + port + ".");
 });
