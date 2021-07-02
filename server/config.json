@@ -1,0 +1,25 @@
+{
+    "appID": "cakeySE",
+    "appName": "Cakey",
+    "masterKey": "",
+    "serverURL": "http://localhost:1337/parse",
+    "publicServerURL": "http://localhost:1337/parse",
+    "databaseURI": "mongodb://localhost:27017/dev",
+    "parseMount": "/parse",
+    "dashboardMount": "/dashboard",
+    "emailAdapter": {
+        "module": "parse-server-mailjet-adapter",
+        "apiKey": "",
+        "apiSecret": ""
+    },
+    "dashboard": {
+        "users": [
+            {
+                "user": "admin",
+                "pass": "cakey.popcorn.se"
+            }
+        ],
+        "useEncryptedPasswords": false,
+        "trustProxy": 1
+    }
+}
