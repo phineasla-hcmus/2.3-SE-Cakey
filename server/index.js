@@ -2,6 +2,7 @@ const express = require("express");
 const ParseServer = require("parse-server").ParseServer;
 const ParseDashboard = require("parse-dashboard");
 const path = require("path");
+const fs = require("fs");
 const args = process.argv || [];
 
 require("dotenv").config();
@@ -39,11 +40,12 @@ const config = {
             fromEmail: process.env.SENDER_EMAIL,
             fromName: process.env.SENDER_NAME,
             passwordResetTemplateId: 3019641,
-            // passwordResetSubject: "Reset your password",
+            passwordResetSubject: "Reset your password for {{var:appName}}",
             // passwordResetTextPart:
             //     "Hi,\n\nYou requested to reset your password for {{var:appName}}.\n\nPlease, click here to set a new password: {{var:link}}",
-            // passwordResetHtmlPart:
-            //     "Hi,<p>You requested to reset your password for <b>{{var:appName}}</b>.</p><p>Please, click here to set a new password: {{var:link}}</p>",
+            passwordResetHtmlPart: fs.readFileSync(
+                __dirname + "/email/password_reset.html"
+            ),
         },
     },
     passwordPolicy: {
@@ -64,8 +66,6 @@ const dashboardConfig = {
     // Enable access from Heroku server
     trustProxy: 1,
 };
-
-console.log(config);
 
 const api = new ParseServer(config);
 const dashboard = new ParseDashboard(dashboardConfig);
