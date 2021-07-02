@@ -53,7 +53,14 @@ const config = {
 };
 
 const dashboardConfig = {
-    apps: [{ ...appConfig }],
+    apps: [
+        {
+            appName: process.env.APP_NAME,
+            appId: process.env.APP_ID,
+            masterKey: process.env.MASTER_KEY,
+            serverURL: process.env.SERVER_URL,
+        },
+    ],
     users: [
         {
             // user: process.env.DASHBOARD_USER_ID,
