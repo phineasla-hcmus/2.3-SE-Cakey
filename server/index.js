@@ -4,6 +4,7 @@ const ParseDashboard = require("parse-dashboard");
 const path = require("path");
 const args = process.argv || [];
 const fs = require("fs");
+require("dotenv").config();
 
 const databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
 const parseMountPath = process.env.PARSE_MOUNT || "/parse";
@@ -57,11 +58,12 @@ const dashboardConfig = {
     ],
     users: [
         {
-            user: "admin",
-            pass: "popcorn.se",
+            user: process.env.DASHBOARD_USER_ID,
+            pass: process.env.DASHBOARD_USER_PASSWORD,
         },
     ],
     useEncryptedPasswords: false,
+    // Enable access from Heroku server
     trustProxy: 1,
 };
 
