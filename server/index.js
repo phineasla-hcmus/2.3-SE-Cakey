@@ -1,32 +1,33 @@
+const fs = require("fs");
+const path = require("path");
 const express = require("express");
 const ParseServer = require("parse-server").ParseServer;
 const ParseDashboard = require("parse-dashboard");
-const path = require("path");
-const fs = require("fs");
 const args = process.argv || [];
 
 require("dotenv").config();
 
-const databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
 const parseMountPath = process.env.PARSE_MOUNT || "/parse";
 const dashboardMountPath = process.env.DASHBOARD_MOUNT || "/dashboard";
+const cloudMountPath =
+    process.env.CLOUD_CODE_MAIN || __dirname + "/cloud/main.js";
 
-if (!databaseUri) {
-    console.log("DATABASE_URI not specified, falling back to localhost.");
-}
-
-const appConfig = {
+const generalConfig = {
     appName: process.env.APP_NAME,
+    serverURL: process.env.SERVER_URL,
+    publicServerURL: process.env.PUBLIC_SERVER_URL,
+};
+
+const securityConfig = {
     appId: process.env.APP_ID,
     masterKey: process.env.MASTER_KEY,
-    serverURL: process.env.SERVER_URL,
 };
 
 const config = {
-    ...appConfig,
-    publicServerURL: process.env.PUBLIC_SERVER_URL,
-    databaseURI: process.env.DATABASE_URI,
-    cloud: process.env.CLOUD_CODE_MAIN || __dirname + "/cloud/main.js",
+    ...generalConfig,
+    ...securityConfig,
+    databaseURI: process.env.DATABASE_URI || process.env.MONGODB_URI,
+    cloud: cloudMountPath,
     liveQuery: {
         classNames: ["Posts", "Comments"], // List of classes to support for query subscriptions
     },
@@ -53,7 +54,7 @@ const config = {
 };
 
 const dashboardConfig = {
-    apps: [{ ...appConfig }],
+    apps: [{ ...generalConfig, ...securityConfig }],
     users: [
         {
             user: process.env.DASHBOARD_USER_ID,

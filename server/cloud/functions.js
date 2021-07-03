@@ -21,8 +21,7 @@ Parse.Cloud.afterSave(Parse.User, async (request) => {
         const config = await Parse.Config.get();
         const userId = request.object.id;
         const iconId = config.get("defaultProfileIcon");
-
-        console.log("ICON FOUND: ", iconId);
+        const ProfileIcon = Parse.Object;
         try {
             let [user, icon] = await Promise.all([
                 userQuery.get(userId, { useMasterKey: true }),
