@@ -43,14 +43,13 @@ Parse.Cloud.beforeSave(Parse.User, (request) => {
             .then((config) => {
                 const ProfileIcon = Parse.Object.extend("ProfileIcon");
                 const iconId = config.get("defaultProfileIcon");
-                const user = request.object;
                 const useMasterKey = { useMasterKey: true };
-                user.set("level", 1, useMasterKey);
-                user.set("exp", 0, useMasterKey);
-                user.set(
+                request.object.set("level", 1, useMasterKey);
+                request.object.set("exp", 0, useMasterKey);
+                request.object.set(
                     "profileIcon",
                     ProfileIcon.createWithoutData(iconId),
-                    useMasterKey
+                    { useMasterKey: true }
                 );
             })
             .catch((err) => {
