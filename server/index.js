@@ -48,7 +48,9 @@ const config = {
         },
     },
     passwordPolicy: {
-        // Optional setting to set a validity duration for password reset links (in seconds)
+        // Enforce a password of at least 6 characters
+        validatorPattern: /^.{6,}$/,
+        // Set a validity duration for password reset links (in seconds)
         resetTokenValidityDuration: 5 * 60,
     },
 };
