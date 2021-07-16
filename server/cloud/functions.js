@@ -36,21 +36,21 @@ Parse.Cloud.afterSave(Parse.User, async (request) => {
     }
 });
 
-Parse.Cloud.beforeSave(Parse.User, (request) => {
-    if (!request.original) {
-        // New user
-        Parse.Config.get()
-            .then((config) => {
-                const ProfileIcon = Parse.Object.extend("ProfileIcon");
-                const iconId = config.get("defaultProfileIcon");
-                const user = request.object;
-                user.set("level", 1);
-                user.set("exp", 0);
-                user.set("profileIcon", ProfileIcon.createWithoutData(iconId));
-                user.save({ useMasterKey: true });
-            })
-            .catch((err) => {
-                console.error(err);
-            });
-    }
-});
+// Parse.Cloud.beforeSave(Parse.User, (request) => {
+//     if (!request.original) {
+//         // New user
+//         Parse.Config.get()
+//             .then((config) => {
+//                 const ProfileIcon = Parse.Object.extend("ProfileIcon");
+//                 const iconId = config.get("defaultProfileIcon");
+//                 const user = request.object;
+//                 user.set("level", 1);
+//                 user.set("exp", 0);
+//                 user.set("profileIcon", ProfileIcon.createWithoutData(iconId));
+//                 user.save({ useMasterKey: true });
+//             })
+//             .catch((err) => {
+//                 console.error(err);
+//             });
+//     }
+// });
