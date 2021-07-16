@@ -52,20 +52,17 @@ Parse.Cloud.beforeSave(Parse.User, async (request) => {
     //         console.error(error);
     //     }
     // }
-    const user = request.object;
-    console.log("isNew(): " + user.isNew());
-    console.log("existed(): " + user.existed());
-    console.log("!original: " + request.original);
+    const { object: user } = request;
     if (user.isNew()) {
         try {
             const config = await Parse.Config.get();
             const ProfileIcon = Parse.Object.extend("ProfileIcon");
             const iconId = config.get("defaultProfileIcon");
-            request.object.set("level", 1);
-            request.object.set("exp", 0);
-            request.object.set("profileIcon", ProfileIcon.createWithoutData(iconId));
-            console.log("myuser: " + user);
-            console.log("myrequest: " + request.object);
+            user.set("level", 1);
+            user.set("exp", 0);
+            user.set("profileIcon", ProfileIcon.createWithoutData(iconId));
+            console.log("myuser: ", user);
+            console.log("myrequest: ", request.object);
         } catch (error) {
             console.error(error);
         }
