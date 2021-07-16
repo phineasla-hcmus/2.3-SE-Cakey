@@ -47,7 +47,7 @@ Parse.Cloud.beforeSave(Parse.User, (request) => {
                 user.set("level", 1);
                 user.set("exp", 0);
                 user.set("profileIcon", ProfileIcon.createWithoutData(iconId));
-                return user.save({ useMasterKey: true });
+                user.save({ useMasterKey: true });
             })
             .catch((err) => {
                 console.error(err);
