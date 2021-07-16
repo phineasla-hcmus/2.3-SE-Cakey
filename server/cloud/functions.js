@@ -37,17 +37,35 @@ Parse.Cloud.beforeSave("Test", () => {
 // });
 
 Parse.Cloud.beforeSave(Parse.User, async (request) => {
-    if (!request.original) {
-        // New user
+    // if (!request.original) {
+    //     // New user
+    //     try {
+    //         const config = await Parse.Config.get();
+    //         const ProfileIcon = Parse.Object.extend("ProfileIcon");
+    //         const iconId = config.get("defaultProfileIcon");
+    //         const user = request.object;
+    //         user.set("level", 1);
+    //         user.set("exp", 0);
+    //         user.set("profileIcon", ProfileIcon.createWithoutData(iconId));
+    //         return user;
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // }
+    const user = request.object;
+    console.log("isNew(): " + user.isNew());
+    console.log("existed(): " + user.existed());
+    console.log("!original: " + request.original);
+    if (user.isNew()) {
         try {
             const config = await Parse.Config.get();
             const ProfileIcon = Parse.Object.extend("ProfileIcon");
             const iconId = config.get("defaultProfileIcon");
-            const user = request.object;
-            user.set("level", 1);
-            user.set("exp", 0);
-            user.set("profileIcon", ProfileIcon.createWithoutData(iconId));
-            return user;
+            request.object.set("level", 1);
+            request.object.set("exp", 0);
+            request.object.set("profileIcon", ProfileIcon.createWithoutData(iconId));
+            console.log("myuser: " + user);
+            console.log("myrequest: " + request.object);
         } catch (error) {
             console.error(error);
         }
