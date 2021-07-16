@@ -36,25 +36,21 @@ Parse.Cloud.afterSave(Parse.User, async (request) => {
     }
 });
 
-// Parse.Cloud.beforeSave(Parse.User, (request, respone) => {
-//     if (!request.original) {
-//         // New user
-//         Parse.Config.get()
-//             .then((config) => {
-//                 const ProfileIcon = Parse.Object.extend("ProfileIcon");
-//                 const iconId = config.get("defaultProfileIcon");
-//                 const user = request.object;
-//                 const useMasterKey = { useMasterKey: true };
-//                 user.set("level", 1, useMasterKey);
-//                 user.set("exp", 0, useMasterKey);
-//                 user.set(
-//                     "profileIcon",
-//                     ProfileIcon.createWithoutData(iconId),
-//                     useMasterKey
-//                 );
-//             })
-//             .catch((err) => {
-//                 console.error(err);
-//             });
-//     }
-// });
+Parse.Cloud.beforeSave(Parse.User, (request) => {
+    if (!request.original) {
+        // New user
+        Parse.Config.get()
+            .then((config) => {
+                const ProfileIcon = Parse.Object.extend("ProfileIcon");
+                const iconId = config.get("defaultProfileIcon");
+                const user = request.object;
+                user.set("level", 1);
+                user.set("exp", 0);
+                user.set("profileIcon", ProfileIcon.createWithoutData(iconId));
+                return user.save({ useMasterKey: true });
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+    }
+});
