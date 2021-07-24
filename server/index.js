@@ -5,7 +5,9 @@ const ParseServer = require("parse-server").ParseServer;
 const ParseDashboard = require("parse-dashboard");
 const args = process.argv || [];
 
-require("dotenv").config();
+if (process.env.NODE_ENV !== "development") {
+    require("dotenv").config();
+}
 
 const parseMountPath = process.env.PARSE_MOUNT || "/parse";
 const dashboardMountPath = process.env.DASHBOARD_MOUNT || "/dashboard";
@@ -23,13 +25,13 @@ const securityConfig = {
     masterKey: process.env.MASTER_KEY,
 };
 
-const config = {
+const serverConfig = {
     ...generalConfig,
     ...securityConfig,
     databaseURI: process.env.DATABASE_URI || process.env.MONGODB_URI,
     cloud: cloudMountPath,
     liveQuery: {
-        classNames: ["Posts", "Comments"], // List of classes to support for query subscriptions
+        classNames: ["Blogs", "Comments", "Likes"], // List of classes to support for query subscriptions
     },
     emailAdapter: {
         module: "parse-server-mailjet-adapter",
@@ -68,7 +70,17 @@ const dashboardConfig = {
     trustProxy: 1,
 };
 
-const api = new ParseServer(config);
+// Disable email adapter if API keys not found
+const emailOptions = serverConfig.emailAdapter.options;
+for (const key in emailOptions) {
+    if (!emailOptions[key]) {
+        console.warn("Email adapter is disabled due to missing properties");
+        delete serverConfig["emailAdapter"];
+        break;
+    }
+}
+
+const api = new ParseServer(serverConfig);
 const dashboard = new ParseDashboard(dashboardConfig);
 
 const app = express();
@@ -98,5 +110,5 @@ ParseServer.createLiveQueryServer(httpServer);
 
 module.exports = {
     app,
-    config,
+    config: serverConfig,
 };
