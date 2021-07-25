@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node index.js",
-    "test": "mongodb-runner start"
+    "test": "mongodb-runner start --dbpath='D:/Code/NodeJS/Cakey-server/localdb'"
   },
   "dependencies": {
     "express": "^4.17.1",
