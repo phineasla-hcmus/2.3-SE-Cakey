@@ -5,9 +5,7 @@ const ParseServer = require("parse-server").ParseServer;
 const ParseDashboard = require("parse-dashboard");
 const args = process.argv || [];
 
-if (process.env.NODE_ENV !== "development") {
-    require("dotenv").config();
-}
+require("dotenv").config();
 
 const parseMountPath = process.env.PARSE_MOUNT || "/parse";
 const dashboardMountPath = process.env.DASHBOARD_MOUNT || "/dashboard";
