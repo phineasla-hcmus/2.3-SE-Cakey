@@ -5,7 +5,9 @@
   "license": "MIT",
   "scripts": {
     "start": "node index.js",
-    "test": "mongodb-runner start --dbpath='D:/Code/NodeJS/Cakey-server/localdb'"
+    "pretest": "mongodb-runner start --dbpath=./.mongodb/data --logpath=./.mongodb/logs/standalone.log --pidpath=./.mongodb/pids --purge=false",
+    "test": "node index.js",
+    "posttest": "mongodb-runner stop"
   },
   "dependencies": {
     "dotenv": "^10.0.0",
