@@ -1,13 +1,13 @@
-const util = require("./util");
+const utils = require("./utils");
 
 Parse.Cloud.beforeSave(
     "Blog",
     (req) => {
         const { original, object } = req;
         if (object.isNew()) {
-            object.setACL(util.authorACL(req.user));
+            object.setACL(utils.authorACL(req.user));
         } else {
-            util.replaceFile(original.get("img"), object.get("img"));
+            utils.replaceFile(original.get("img"), object.get("img"));
         }
     },
     {
@@ -21,7 +21,7 @@ Parse.Cloud.beforeSave(
 );
 
 Parse.Cloud.beforeDelete("Blog", (req) => {
-    req.object.get("img").destroy();
+    utils.destroyFile(req.object.get("img"));
 });
 
 Parse.Cloud.beforeSave(
@@ -29,9 +29,9 @@ Parse.Cloud.beforeSave(
     (req) => {
         const { original, object } = req;
         if (object.isNew()) {
-            object.setACL(util.authorACL(req.user));
+            object.setACL(utils.authorACL(req.user));
         } else {
-            util.replaceFile(original.get("img"), object.get("img"));
+            utils.replaceFile(original.get("img"), object.get("img"));
         }
     },
     {
@@ -53,7 +53,7 @@ Parse.Cloud.beforeSave(
 );
 
 Parse.Cloud.beforeDelete("Step", (req) => {
-    req.object.get("img").destroy();
+    utils.destroyFile(req.object.get("img"));
 });
 
 Parse.Cloud.beforeSave(
@@ -61,7 +61,7 @@ Parse.Cloud.beforeSave(
     (req) => {
         const { original, object } = req;
         if (object.isNew()) {
-            object.setACL(util.authorACL(req.user));
+            object.setACL(utils.authorACL(req.user));
         }
     },
     {

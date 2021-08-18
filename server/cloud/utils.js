@@ -7,6 +7,10 @@ function replaceFile(old, cur) {
     }
 }
 
+function destroyFile(obj) {
+    if (obj !== undefined) obj.destroy();
+}
+
 function authorACL(user) {
     const acl = new Parse.ACL(user);
     acl.setPublicReadAccess(true);
@@ -14,4 +18,4 @@ function authorACL(user) {
     return acl;
 }
 
-module.exports = { replaceFile, authorACL };
+module.exports = { replaceFile, destroyFile, authorACL };
