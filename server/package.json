@@ -9,7 +9,7 @@
     "startdb": "mongodb-runner start --dbpath=./.mongodb/data --logpath=./.mongodb/logs/standalone.log --pidpath=./.mongodb/pids --purge=false",
     "stopdb": "mongodb-runner stop",
     "pretest": "yarn startdb",
-    "test": "yarn start"
+    "test": "nodemon index.js"
   },
   "dependencies": {
     "dotenv": "^10.0.0",

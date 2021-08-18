@@ -2,3 +2,5 @@
 // require("./functions.js");
 require("./user");
 require("./blog");
+require("./level");
+require("./profileIcon");

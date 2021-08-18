@@ -1,3 +1,5 @@
+const util = require("./util");
+
 function setUserACL(req) {
     const acl = new Parse.ACL(req.user);
     acl.setPublicWriteAccess(false);
@@ -9,14 +11,9 @@ Parse.Cloud.beforeSave(
     (req) => {
         const { original, object } = req;
         if (object.isNew()) {
-            const acl = new Parse.ACL(req.user);
-            acl.setPublicWriteAccess(false);
-            acl.setPublicReadAccess(true);
-            object.setACL(acl);
+            object.setACL(util.authorACL(req.user));
         } else {
-            if (original.get("img").url() !== object.get("img").url()) {
-                original.get("img").destroy();
-            }
+            util.replaceFile(original.get("img"), object.get("img"));
         }
     },
     {
@@ -34,13 +31,9 @@ Parse.Cloud.beforeSave(
     (req) => {
         const { original, object } = req;
         if (object.isNew()) {
-            const acl = new Parse.ACL(req.user);
-            acl.setPublicWriteAccess(false);
-            object.setACL(acl);
+            object.setACL(util.authorACL(req.user));
         } else {
-            if (original.get("img").url() !== object.get("img").url()) {
-                original.get("img").destroy();
-            }
+            util.replaceFile(original.get("img"), object.get("img"));
         }
     },
     {
@@ -66,9 +59,7 @@ Parse.Cloud.beforeSave(
     (req) => {
         const { original, object } = req;
         if (object.isNew()) {
-            const acl = new Parse.ACL(req.user);
-            acl.setPublicWriteAccess(false);
-            object.setACL(acl);
+            object.setACL(util.authorACL(req.user));
         }
     },
     {
