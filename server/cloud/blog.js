@@ -1,3 +1,4 @@
+const { query } = require("express");
 const utils = require("./utils");
 
 Parse.Cloud.beforeSave(
@@ -22,6 +23,14 @@ Parse.Cloud.beforeSave(
 
 Parse.Cloud.beforeDelete("Blog", (req) => {
     utils.destroyFile(req.object.get("img"));
+    // Delete all Step
+    const queryStep = new Parse.Query("Step");
+    queryStep.equalTo("blog", req.object);
+    queryStep.findAll().then(Parse.Object.destroyAll);
+    // Delete all Ingredient
+    const queryIngredient = new Parse.Query("Ingredient");
+    queryIngredient.equalTo("blog", req.blog);
+    queryIngredient.findAll().then(Parse.Object.destroyAll);
 });
 
 Parse.Cloud.beforeSave(
