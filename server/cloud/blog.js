@@ -20,6 +20,10 @@ Parse.Cloud.beforeSave(
     }
 );
 
+Parse.Cloud.beforeDelete("Blog", (req) => {
+    req.object.get("img").destroy();
+});
+
 Parse.Cloud.beforeSave(
     "Step",
     (req) => {
@@ -47,6 +51,10 @@ Parse.Cloud.beforeSave(
         requireUser: true,
     }
 );
+
+Parse.Cloud.beforeDelete("Step", (req) => {
+    req.object.get("img").destroy();
+});
 
 Parse.Cloud.beforeSave(
     "Ingredient",
