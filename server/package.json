@@ -7,7 +7,9 @@
     "start": "node index.js",
     "initdb": "mkdirp ./.mongodb/data && mkdirp ./.mongodb/logs && mkdirp ./.mongodb/pids",
     "startdb": "mongodb-runner start --dbpath=./.mongodb/data --logpath=./.mongodb/logs/standalone.log --pidpath=./.mongodb/pids --purge=false",
-    "stopdb": "mongodb-runner stop"
+    "stopdb": "mongodb-runner stop",
+    "pretest": "yarn startdb",
+    "test": "yarn start"
   },
   "dependencies": {
     "dotenv": "^10.0.0",

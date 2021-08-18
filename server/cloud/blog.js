@@ -11,6 +11,7 @@ Parse.Cloud.beforeSave(
         if (object.isNew()) {
             const acl = new Parse.ACL(req.user);
             acl.setPublicWriteAccess(false);
+            acl.setPublicReadAccess(true);
             object.setACL(acl);
         } else {
             if (original.get("img").url() !== object.get("img").url()) {
@@ -19,7 +20,11 @@ Parse.Cloud.beforeSave(
         }
     },
     {
-        fields: { name: { required: true } },
+        fields: {
+            name: { required: true },
+            like: { default: 0, constant: true },
+            dislike: { default: 0, constant: true },
+        },
         requireUser: true,
     }
 );
@@ -40,7 +45,15 @@ Parse.Cloud.beforeSave(
     },
     {
         fields: {
-            position: { required: true },
+            position: {
+                required: true,
+                type: Number,
+                options: (pos) => {
+                    return pos > 0;
+                },
+                error:
+                    "Step position must be an non-negative integer and start from 1",
+            },
             text: { required: true },
             blog: { required: true },
         },
