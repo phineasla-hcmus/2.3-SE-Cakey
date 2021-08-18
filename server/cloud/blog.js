@@ -1,11 +1,5 @@
 const util = require("./util");
 
-function setUserACL(req) {
-    const acl = new Parse.ACL(req.user);
-    acl.setPublicWriteAccess(false);
-    req.object.setACL(acl);
-}
-
 Parse.Cloud.beforeSave(
     "Blog",
     (req) => {
