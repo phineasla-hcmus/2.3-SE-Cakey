@@ -7,8 +7,9 @@ Parse.Cloud.beforeSave(
         const { original, object } = req;
         if (object.isNew()) {
             object.setACL(utils.authorACL(req.user));
-        } else {
-            utils.replaceFile(original.get("img"), object.get("img"));
+        } else if (object.dirty("img")) {
+            // utils.replaceFile(original.get("img"), object.get("img"));
+            utils.destroyFile(original.get("img"));
         }
     },
     {
@@ -16,6 +17,7 @@ Parse.Cloud.beforeSave(
             name: { required: true },
             like: { default: 0, constant: true },
             dislike: { default: 0, constant: true },
+            report: { default: 0, constant: true },
         },
         requireUser: true,
     }
