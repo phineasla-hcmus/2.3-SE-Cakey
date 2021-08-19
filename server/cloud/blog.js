@@ -22,15 +22,12 @@ Parse.Cloud.beforeSave(
 );
 
 Parse.Cloud.beforeDelete("Blog", (req) => {
-    utils.destroyFile(req.object.get("img"));
-    // Delete all Step
     const queryStep = new Parse.Query("Step");
-    queryStep.equalTo("blog", req.object);
-    queryStep.findAll().then(Parse.Object.destroyAll);
-    // Delete all Ingredient
+    utils.destroyAll(queryStep, "blog", req.object).catch(console.log);
     const queryIngredient = new Parse.Query("Ingredient");
-    queryIngredient.equalTo("blog", req.blog);
-    queryIngredient.findAll().then(Parse.Object.destroyAll);
+    utils.destroyAll(queryIngredient, "blog", req.object).catch(console.log);
+    // Finally, delete the thumbnail
+    utils.destroyFile(req.object.get("img"));
 });
 
 Parse.Cloud.beforeSave(

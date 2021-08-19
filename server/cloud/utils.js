@@ -8,7 +8,17 @@ function replaceFile(old, cur) {
 }
 
 function destroyFile(obj) {
-    if (obj !== undefined) obj.destroy();
+    if (obj !== undefined) {
+        obj.destroy();
+        // The pointer might still exist
+    }
+}
+
+function destroyAll(query, key, obj) {
+    query.equalTo(key, obj);
+    return query.findAll().then((res) => {
+        return Parse.Object.destroyAll(res, { useMasterKey: true });
+    });
 }
 
 function authorACL(user) {
@@ -18,4 +28,4 @@ function authorACL(user) {
     return acl;
 }
 
-module.exports = { replaceFile, destroyFile, authorACL };
+module.exports = { replaceFile, destroyFile, destroyAll, authorACL };
