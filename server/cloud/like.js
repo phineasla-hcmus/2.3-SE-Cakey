@@ -2,8 +2,8 @@ const utils = require("./utils");
 const Like = Parse.Object.extend("Like");
 
 /**
-@throws Invalid Blog ID
-*/
+ * @throws Invalid Blog ID
+ */
 Parse.Cloud.define(
     "reactBlog",
     async (req) => {
@@ -12,13 +12,12 @@ Parse.Cloud.define(
         let like = await queryLike.first();
         let attrs = { type: req.params.type };
         if (like === undefined) {
-            const queryBlog = new Parse.Query("Blog");
-            const blog = await queryBlog.get(req.params.blogId);
-            if (blog === undefined) throw `Invalid Blog ${req.params.blogId}`;
+            // const queryBlog = new Parse.Query("Blog");
+            // const blog = await queryBlog.get(req.params.blogId);
+            // if (blog === undefined) throw `Invalid Blog ${req.params.blogId}`;
             like = new Like();
-            like.setACL(utils.authorACL(req.user));
             attrs.user = req.user;
-            attrs.blog = blog;
+            attrs.blog = Like.createWithoutData(req.params.blogId);
         }
         await like.save(attrs);
     },
@@ -38,8 +37,8 @@ Parse.Cloud.define(
 );
 
 /**
-@throws Like/Dislike not existed
-*/
+ * @throws Like/Dislike not existed
+ */
 Parse.Cloud.define(
     "destroyReactBlog",
     async (req) => {
@@ -58,13 +57,28 @@ Parse.Cloud.define(
     }
 );
 
+/**
+ * Currently can only be called through "reactBlog", CLP write is disabled for all user
+ */
 Parse.Cloud.beforeSave(
     "Like",
     async (req) => {
         const { original, object } = req;
-        const counter = [0, 0];
+        const keys = ["dislike", "like"];
+        const counters = [0, 0];
         if (object.isNew()) {
+            object.setACL(utils.authorACL(req.user));
+        } else {
+            counter[original.get("type")]--;
         }
+        counter[object.get("type")]++;
+        const blog = await object.get("blog");
+        if (blog === undefined) throw `Invalid Blog for Like ${object.id}`;
+        for (let i = 0; i < counter.length; i++) {
+            if (counter[i] > 0) blog.increment(keys[i]);
+            else if (counters[i] < 0) blog.decrement(keys[i]);
+        }
+        blog.save(null, { useMasterKey: true });
     },
     {
         fields: {
@@ -73,3 +87,15 @@ Parse.Cloud.beforeSave(
         },
     }
 );
+
+/**
+ * Currently can only be called through "destroyReactBlog", CLP write is disabled for all user
+ */
+Parse.Cloud.afterDelete("Like", async (req) => {
+    const { object } = req;
+    const blog = await object.get("blog");
+    if (blog === undefined) throw `Invalid Blog for Like ${object.id}`;
+    if (object.get("type")) blog.decrement("like");
+    else blog.decrement("dislike");
+    blog.save(null, { useMasterKey: true });
+});
