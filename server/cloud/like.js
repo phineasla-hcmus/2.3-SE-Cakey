@@ -1,5 +1,6 @@
 const utils = require("./utils");
 const Like = Parse.Object.extend("Like");
+const Blog = Parse.Object.extend("Blog");
 
 /**
  * @throws Invalid Blog ID
@@ -14,7 +15,7 @@ Parse.Cloud.define(
         if (like === undefined) {
             like = new Like();
             attrs.user = req.user;
-            attrs.blog = Like.createWithoutData(req.params.blogId);
+            attrs.blog = Blog.createWithoutData(req.params.blogId);
         }
         await like.save(attrs);
     },
