@@ -12,9 +12,6 @@ Parse.Cloud.define(
         let like = await queryLike.first();
         let attrs = { type: req.params.type };
         if (like === undefined) {
-            // const queryBlog = new Parse.Query("Blog");
-            // const blog = await queryBlog.get(req.params.blogId);
-            // if (blog === undefined) throw `Invalid Blog ${req.params.blogId}`;
             like = new Like();
             attrs.user = req.user;
             attrs.blog = Like.createWithoutData(req.params.blogId);

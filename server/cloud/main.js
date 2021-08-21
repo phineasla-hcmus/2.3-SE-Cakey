@@ -3,4 +3,5 @@
 require("./user");
 require("./blog");
 require("./level");
+require("./like");
 require("./profileIcon");
