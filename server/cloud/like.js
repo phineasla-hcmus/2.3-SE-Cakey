@@ -66,13 +66,13 @@ Parse.Cloud.beforeSave(
         if (object.isNew()) {
             object.setACL(utils.authorACL(req.user));
         } else {
-            counter[original.get("type")]--;
+            counters[original.get("type")]--;
         }
-        counter[object.get("type")]++;
+        counters[object.get("type")]++;
         const blog = await object.get("blog");
         if (blog === undefined) throw `Invalid Blog for Like ${object.id}`;
-        for (let i = 0; i < counter.length; i++) {
-            if (counter[i] > 0) blog.increment(keys[i]);
+        for (let i = 0; i < counters.length; i++) {
+            if (counters[i] > 0) blog.increment(keys[i]);
             else if (counters[i] < 0) blog.decrement(keys[i]);
         }
         blog.save(null, { useMasterKey: true });
