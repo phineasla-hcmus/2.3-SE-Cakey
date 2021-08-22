@@ -26,9 +26,11 @@ Parse.Cloud.beforeSave(
 Parse.Cloud.beforeDelete("Blog", (req) => {
     const queryStep = new Parse.Query("Step");
     utils.destroyAll(queryStep, "blog", req.object).catch(console.log);
-    const queryIngredient = new Parse.Query("Ingredient");
-    utils.destroyAll(queryIngredient, "blog", req.object).catch(console.log);
-    // Finally, delete the thumbnail
+    const blogContent = req.object.get("blogContent");
+    if (blogContent != null) blogContent.destroy().catch(console.log);
+    // DEPRECATED
+    // const queryIngredient = new Parse.Query("Ingredient");
+    // utils.destroyAll(queryIngredient, "blog", req.object).catch(console.log);
     utils.destroyFile(req.object.get("img"));
 });
 
