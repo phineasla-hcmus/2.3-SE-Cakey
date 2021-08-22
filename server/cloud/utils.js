@@ -14,10 +14,11 @@ function destroyFile(obj) {
     }
 }
 
-function destroyAll(query, key, obj) {
+function destroyAll(query, key, obj, useMasterKey = true) {
+    const opts = { useMasterKey: useMasterKey }
     query.equalTo(key, obj);
-    return query.findAll().then((res) => {
-        return Parse.Object.destroyAll(res, { useMasterKey: true });
+    return query.findAll(opts).then((res) => {
+        return Parse.Object.destroyAll(res, opts);
     });
 }
 
