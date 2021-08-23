@@ -1,18 +1,6 @@
-require("dotenv").config({ path: "./.env.test" });
-const Parse = require("parse/node");
-
-const Blog = Parse.Object.extend("Blog");
-const BlogContent = Parse.Object.extend("BlogContent");
-const Step = Parse.Object.extend("Step");
-const Like = Parse.Object.extend("Like");
-const Report = Parse.Object.extend("Report");
+const { Parse, Blog, BlogContent, Step, Like, Report } = require("./helper");
 
 describe("Unauthenicated", () => {
-    beforeAll(() => {
-        Parse.initialize(process.env.APP_ID);
-        Parse.serverURL = process.env.SERVER_URL;
-    });
-
     it("cannot query for Blogs", async () => {
         const query = new Parse.Query(Blog);
         query.limit(1);
