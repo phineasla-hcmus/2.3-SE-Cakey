@@ -5,18 +5,18 @@ Parse.Cloud.beforeSave(
     (req) => {
         const { original, object } = req;
         let acl;
-        if (object.isNew()) {
+        if (object.isNew() && !req.master) {
             acl = utils.authorACL(req.user);
-            acl = utils.premiumACL(acl, object.get("premium"));
-        } else if (object.dirty("img")) {
-            // utils.replaceFile(original.get("img"), object.get("img"));
+        }
+        if (object.dirty("img") && original) {
             utils.destroyFile(original.get("img"));
         }
         if (object.dirty("premium")) {
-            console.log("DIRTY PREMIUM");
             acl = utils.premiumACL(acl, object.get("premium"));
-        } else console.log("NEW OBJ => NO DIRTY");
-        if (acl) object.setACL(acl);
+        }
+        if (acl) {
+            object.setACL(acl);
+        }
     },
     {
         fields: {
@@ -33,9 +33,9 @@ Parse.Cloud.beforeSave(
 
 Parse.Cloud.beforeDelete("Blog", (req) => {
     const queryStep = new Parse.Query("Step");
-    utils.destroyAll(queryStep, "blog", req.object).catch(console.log);
+    utils.destroyAll(queryStep, "blog", req.object).catch(console.error);
     const blogContent = req.object.get("blogContent");
-    if (blogContent != null) blogContent.destroy().catch(console.log);
+    blogContent.destroy().catch(console.error);
     // DEPRECATED
     // const queryIngredient = new Parse.Query("Ingredient");
     // utils.destroyAll(queryIngredient, "blog", req.object).catch(console.log);
