@@ -8,14 +8,14 @@ function replaceFile(old, cur) {
 }
 
 function destroyFile(obj) {
-    if (obj !== undefined) {
+    if (obj != null) {
         obj.destroy();
         // The pointer might still exist
     }
 }
 
 function destroyAll(query, key, obj, useMasterKey = true) {
-    const opts = { useMasterKey: useMasterKey }
+    const opts = { useMasterKey: useMasterKey };
     query.equalTo(key, obj);
     return query.findAll(opts).then((res) => {
         return Parse.Object.destroyAll(res, opts);

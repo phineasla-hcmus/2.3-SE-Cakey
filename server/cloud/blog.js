@@ -1,4 +1,3 @@
-const { query } = require("express");
 const utils = require("./utils");
 
 Parse.Cloud.beforeSave(
@@ -15,6 +14,7 @@ Parse.Cloud.beforeSave(
     {
         fields: {
             name: { required: true },
+            blogContent: { required: true },
             like: { default: 0, constant: true },
             dislike: { default: 0, constant: true },
             report: { default: 0, constant: true },
