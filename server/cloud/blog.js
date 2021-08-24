@@ -4,17 +4,16 @@ Parse.Cloud.beforeSave(
     "Blog",
     (req) => {
         const { original, object } = req;
-        let acl;
+        let acl = object.getACL();
         if (object.isNew() && !req.master) {
             acl = utils.authorACL(req.user);
+            object.setACL(acl);
         }
-        if (object.dirty("img") && original) {
+        if (object.dirty("img") && !object.isNew()) {
             utils.destroyFile(original.get("img"));
         }
         if (object.dirty("premium")) {
             acl = utils.premiumACL(acl, object.get("premium"));
-        }
-        if (acl) {
             object.setACL(acl);
         }
     },
