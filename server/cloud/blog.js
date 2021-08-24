@@ -36,9 +36,9 @@ Parse.Cloud.beforeDelete("Blog", (req) => {
     utils.destroyAll(queryStep, "blog", req.object).catch(console.error);
     req.object
         .get("blogContent")
-        .fetch()
+        .fetch({ useMasterKey: true })
         .then((blogContent) => {
-            blogContent.destroy().catch(console.error);
+            blogContent.destroy({ useMasterKey: true }).catch(console.error);
         });
     // DEPRECATED
     // const queryIngredient = new Parse.Query("Ingredient");
