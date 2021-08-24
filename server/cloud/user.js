@@ -16,3 +16,7 @@ Parse.Cloud.beforeSave(
         },
     }
 );
+
+Parse.Cloud.beforeDelete(Parse.User, async (req) => {
+    utils.destroyFile(req.object.get("avatar"));
+});

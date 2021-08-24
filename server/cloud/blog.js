@@ -67,20 +67,20 @@ Parse.Cloud.beforeDelete("Step", (req) => {
 });
 
 // DEPRECATED
-Parse.Cloud.beforeSave(
-    "Ingredient",
-    (req) => {
-        const { original, object } = req;
-        if (object.isNew()) {
-            object.setACL(utils.authorACL(req.user));
-        }
-    },
-    {
-        fields: {
-            amount: { required: true },
-            name: { required: true },
-            blog: { required: true },
-        },
-        requireUser: true,
-    }
-);
+// Parse.Cloud.beforeSave(
+//     "Ingredient",
+//     (req) => {
+//         const { original, object } = req;
+//         if (object.isNew()) {
+//             object.setACL(utils.authorACL(req.user));
+//         }
+//     },
+//     {
+//         fields: {
+//             amount: { required: true },
+//             name: { required: true },
+//             blog: { required: true },
+//         },
+//         requireUser: true,
+//     }
+// );
