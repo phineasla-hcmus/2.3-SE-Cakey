@@ -14,8 +14,7 @@ function destroyFile(obj) {
     }
 }
 
-function destroyAll(query, key, obj, useMasterKey = true) {
-    const opts = { useMasterKey: useMasterKey };
+function destroyAll(query, key, obj, opts) {
     query.equalTo(key, obj);
     return query.findAll(opts).then((res) => {
         return Parse.Object.destroyAll(res, opts);
