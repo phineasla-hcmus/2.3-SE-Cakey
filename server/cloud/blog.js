@@ -32,10 +32,15 @@ Parse.Cloud.beforeSave(
 );
 
 Parse.Cloud.beforeDelete("Blog", (req) => {
+    // Cascade delete to Step and BlogContent
     const queryStep = new Parse.Query("Step");
     utils.destroyAll(queryStep, "blog", req.object).catch(console.error);
-    const blogContent = req.object.get("blogContent");
-    blogContent.destroy().catch(console.error);
+    req.object
+        .get("blogContent")
+        .fetch()
+        .then((blogContent) => {
+            blogContent.destroy().catch(console.error);
+        });
     // DEPRECATED
     // const queryIngredient = new Parse.Query("Ingredient");
     // utils.destroyAll(queryIngredient, "blog", req.object).catch(console.log);
