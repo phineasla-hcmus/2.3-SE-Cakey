@@ -22,11 +22,23 @@ function destroyAll(query, key, obj, useMasterKey = true) {
     });
 }
 
-function authorACL(user) {
-    const acl = new Parse.ACL(user);
+function authorACL(user, acl = new Parse.ACL()) {
+    acl.setWriteAccess(user, true);
     acl.setPublicReadAccess(true);
     acl.setPublicWriteAccess(false);
     return acl;
 }
 
-module.exports = { replaceFile, destroyFile, destroyAll, authorACL };
+function premiumACL(acl = new Parse.ACL(), allowed = true) {
+    acl.setPublicReadAccess(!allowed);
+    acl.setRoleReadAccess("premium", allowed);
+    return acl;
+}
+
+module.exports = {
+    replaceFile,
+    destroyFile,
+    destroyAll,
+    authorACL,
+    premiumACL,
+};

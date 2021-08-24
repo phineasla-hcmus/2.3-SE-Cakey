@@ -4,12 +4,19 @@ Parse.Cloud.beforeSave(
     "Blog",
     (req) => {
         const { original, object } = req;
+        let acl;
         if (object.isNew()) {
-            object.setACL(utils.authorACL(req.user));
+            acl = utils.authorACL(req.user);
+            acl = utils.premiumACL(acl, object.get("premium"));
         } else if (object.dirty("img")) {
             // utils.replaceFile(original.get("img"), object.get("img"));
             utils.destroyFile(original.get("img"));
         }
+        if (object.dirty("premium")) {
+            console.log("DIRTY PREMIUM");
+            acl = utils.premiumACL(acl, object.get("premium"));
+        } else console.log("NEW OBJ => NO DIRTY");
+        if (acl) object.setACL(acl);
     },
     {
         fields: {
@@ -18,6 +25,7 @@ Parse.Cloud.beforeSave(
             like: { default: 0, constant: true },
             dislike: { default: 0, constant: true },
             report: { default: 0, constant: true },
+            premium: { default: false, constant: true },
         },
         requireUser: true,
     }
