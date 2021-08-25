@@ -32,6 +32,7 @@ function setAllACL(query, key, obj, acl, opts) {
 }
 
 function authorACL(user, acl = new Parse.ACL()) {
+    acl.setReadAccess(user, true);
     acl.setWriteAccess(user, true);
     acl.setPublicReadAccess(true);
     acl.setPublicWriteAccess(false);

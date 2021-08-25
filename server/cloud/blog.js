@@ -15,9 +15,9 @@ Parse.Cloud.beforeSave(
         if (object.dirty("premium")) {
             const opts = { useMasterKey: true };
             // TODO change to blogContent, not blog
-            acl = utils.premiumACL(acl, object.get("premium"));
-            // object.setACL(acl);
             // Propagate ACL to Step and BlogContent
+            acl = utils.premiumACL(new Parse.ACL(acl), object.get("premium"));
+            // object.setACL(acl);
             object
                 .get("blogContent")
                 .fetch(opts)
