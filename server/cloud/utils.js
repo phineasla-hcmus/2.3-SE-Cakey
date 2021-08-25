@@ -26,6 +26,7 @@ function setAllACL(query, key, obj, acl, opts) {
     return query.findAll(opts).then((res) => {
         for (let i = 0; i < res.length; i++) {
             res[i].setACL(acl);
+            res[i].save(null, opts);
         }
     });
 }

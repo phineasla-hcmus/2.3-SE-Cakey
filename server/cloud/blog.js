@@ -23,6 +23,7 @@ Parse.Cloud.beforeSave(
                 .fetch(opts)
                 .then((blogContent) => {
                     blogContent.setACL(acl);
+                    blogContent.save(null, opts);
                 });
             const queryStep = new Parse.Query("Step");
             utils
