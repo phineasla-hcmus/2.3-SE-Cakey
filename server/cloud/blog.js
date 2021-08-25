@@ -66,9 +66,6 @@ Parse.Cloud.beforeDelete("Blog", ({ user, master, object }) => {
         })
         .catch(console.error);
     utils.destroyFile(object.get("img"));
-    // DEPRECATED
-    // const queryIngredient = new Parse.Query("Ingredient");
-    // utils.destroyAll(queryIngredient, "blog", req.object).catch(console.log);
 });
 
 Parse.Cloud.beforeSave(
@@ -107,22 +104,3 @@ Parse.Cloud.beforeSave(
 Parse.Cloud.beforeDelete("Step", (req) => {
     utils.destroyFile(req.object.get("img"));
 });
-
-// DEPRECATED
-// Parse.Cloud.beforeSave(
-//     "Ingredient",
-//     (req) => {
-//         const { original, object } = req;
-//         if (object.isNew()) {
-//             object.setACL(utils.authorACL(req.user));
-//         }
-//     },
-//     {
-//         fields: {
-//             amount: { required: true },
-//             name: { required: true },
-//             blog: { required: true },
-//         },
-//         requireUser: true,
-//     }
-// );
