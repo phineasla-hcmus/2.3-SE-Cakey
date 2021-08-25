@@ -26,6 +26,7 @@ Parse.Cloud.define(
             attrs.user = user;
             attrs.blog = blogPointer;
         }
+        console.log("SAVING");
         // Bypass no-write CLP
         await like.save(attrs, { useMasterKey: true });
     },
@@ -78,6 +79,7 @@ Parse.Cloud.define(
 Parse.Cloud.beforeSave(
     "Like",
     async ({ original, object }) => {
+        console.log("IN BEFORESAVE");
         const user = object.get("user");
         // Not the prettiest but it gets the job done
         const keys = ["dislike", "like"];
@@ -91,6 +93,7 @@ Parse.Cloud.beforeSave(
         const blog = await object
             .get("blog")
             ?.fetch({ sessionToken: user.getSessionToken() });
+        console.log("DONE FETCH BLOG");
         if (blog) {
             for (let i = 0; i < counters.length; i++) {
                 if (counters[i] > 0) blog.increment(keys[i]);
