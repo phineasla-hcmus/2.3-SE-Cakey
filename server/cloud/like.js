@@ -37,7 +37,7 @@ Parse.Cloud.define(
                 type: Boolean,
             },
         },
-        requireUser: true,
+        // requireUser: true,
     }
 );
 
@@ -63,7 +63,7 @@ Parse.Cloud.define(
         fields: {
             blogId: { required: true, type: String },
         },
-        requireUser: true,
+        // requireUser: true,
     }
 );
 
