@@ -96,18 +96,6 @@ Parse.Cloud.beforeSave(
             }
             await blog.save(null, { useMasterKey: true });
         } else throw `Invalid Blog for Like ${object.id}`;
-
-        // object
-        //     .get("blog")
-        //     ?.fetch({ sessionToken: user.getSessionToken() })
-        //     .then((blog) => {
-        //         for (let i = 0; i < counters.length; i++) {
-        //             if (counters[i] > 0) blog.increment(keys[i]);
-        //             else if (counters[i] < 0) blog.decrement(keys[i]);
-        //         }
-        //         return blog.save(null, { useMasterKey: true });
-        //     })
-        //     .catch(console.error);
     },
     {
         fields: {
