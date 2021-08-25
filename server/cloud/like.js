@@ -19,7 +19,6 @@ Parse.Cloud.define(
         let like = await queryLike.first(opts);
         let attrs = { type: params.type };
         if (!like) {
-            console.log("NEW LIKE, CREATING ONE NOW");
             like = new Like();
             attrs.user = user;
             attrs.blog = blogPointer;
