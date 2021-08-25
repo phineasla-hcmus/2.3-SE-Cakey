@@ -24,7 +24,9 @@ function destroyAll(query, key, obj, opts) {
 function setAllACL(query, key, obj, acl, opts) {
     query.equalTo(key, obj);
     return query.findAll(opts).then((res) => {
-        return res.setACL(acl);
+        for (let i = 0; i < res.length; i++) {
+            res[i].setACL(acl);
+        }
     });
 }
 
