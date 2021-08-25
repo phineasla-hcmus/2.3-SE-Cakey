@@ -8,16 +8,26 @@ const Blog = Parse.Object.extend("Blog");
 Parse.Cloud.define(
     "reactBlog",
     async (req) => {
+        const { user, params } = req;
+        const opts = master
+            ? { useMasterKey: true }
+            : { sessionToken: user.getSessionToken() };
+        // Query first to check if Like existed
         const queryLike = new Parse.Query("Like");
-        queryLike.equalTo("blog", req.params.blogId);
-        let like = await queryLike.first();
-        let attrs = { type: req.params.type };
-        if (like === undefined) {
+        queryLike.equalTo("blog", params.blogId);
+        queryLike.equalTo("user", user);
+        let like = await queryLike.first(opts);
+        let attrs = { type: params.type };
+        if (!like) {
             like = new Like();
-            attrs.user = req.user;
-            attrs.blog = Blog.createWithoutData(req.params.blogId);
+            attrs.user = user;
+            attrs.blog = Blog.createWithoutData(params.blogId);
         }
-        await like.save(attrs);
+        // Bypass no-write CLP
+        await like.save(attrs, {
+            useMasterKey: true,
+            sessionToken: user.getSessionToken(),
+        });
     },
     {
         fields: {
@@ -56,38 +66,56 @@ Parse.Cloud.define(
 );
 
 /**
- * Currently can only be called through "reactBlog", CLP write is disabled for all user
+ * Currently can only be called through "reactBlog",
+ * CLP write is disabled for all user to prevent multiple likes
+ * (unique index is not supported in Parse 4.5.0 (Dec 15, 2020))
  */
 Parse.Cloud.beforeSave(
     "Like",
-    async (req) => {
-        const { original, object } = req;
+    (req) => {
+        const { original, object, user } = req;
         const keys = ["dislike", "like"];
         const counters = [0, 0];
         if (object.isNew()) {
-            object.setACL(utils.authorACL(req.user));
+            object.setACL(utils.authorACL(user));
         } else {
             counters[original.get("type")]--;
         }
         counters[object.get("type")]++;
-        const blog = await object.get("blog");
-        if (blog === undefined) throw `Invalid Blog for Like ${object.id}`;
-        for (let i = 0; i < counters.length; i++) {
-            if (counters[i] > 0) blog.increment(keys[i]);
-            else if (counters[i] < 0) blog.decrement(keys[i]);
-        }
-        blog.save(null, { useMasterKey: true });
+        // const blog = await object.get("blog");
+        // if (!blog) throw `Invalid Blog for Like ${object.id}`;
+        // for (let i = 0; i < counters.length; i++) {
+        //     if (counters[i] > 0) blog.increment(keys[i]);
+        //     else if (counters[i] < 0) blog.decrement(keys[i]);
+        // }
+        // blog.save(null, { useMasterKey: true });
+        object
+            .get("blog")
+            .fetch({ sessionToken: user.getSessionToken() })
+            .then((blog) => {
+                for (let i = 0; i < counters.length; i++) {
+                    if (counters[i] > 0) blog.increment(keys[i]);
+                    else if (counters[i] < 0) blog.decrement(keys[i]);
+                }
+                return blog.save(null, { useMasterKey: true });
+            })
+            .catch(console.error);
     },
     {
         fields: {
+            user: { required: true, constant: true },
             blog: { required: true, constant: true },
             type: { required: true },
         },
+        requireUser: true,
+        requireMaster: true,
     }
 );
 
 /**
- * Currently can only be called through "destroyReactBlog", CLP write is disabled for all user
+ * Currently can only be called through "destroyReactBlog",
+ * CLP write is disabled for all user to prevent multiple likes
+ * (unique index is not supported in Parse 4.5.0 (Dec 15, 2020))
  */
 Parse.Cloud.afterDelete("Like", async (req) => {
     const { object } = req;

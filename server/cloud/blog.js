@@ -2,36 +2,56 @@ const utils = require("./utils");
 
 Parse.Cloud.beforeSave(
     "Blog",
-    (req) => {
-        const { original, object } = req;
+    ({ user, master, original, object }) => {
         let acl = object.getACL();
-        if (object.isNew() && !req.master) {
-            acl = utils.authorACL(req.user);
-            object.setACL(acl);
-        }
-        if (object.dirty("img") && !object.isNew()) {
+        if (object.isNew()) {
+            if (!master) {
+                utils.authorACL(user, acl);
+            }
+        } else if (object.dirty("img")) {
             utils.destroyFile(original.get("img"));
         }
         if (object.dirty("premium")) {
             const opts = { useMasterKey: true };
-            // TODO change to blogContent, not blog
-            // Propagate ACL to Step and BlogContent
             acl = utils.premiumACL(
-                new Parse.ACL(object.get("author")),
+                // req.user = undefined if request comes from Parse Dashboard
+                new Parse.ACL(user || object.get("author")),
                 object.get("premium")
             );
-            // object.setACL(acl);
+            // Propagate ACL to BlogContent
+            // const pointer = object.get("blogContent");
+            // if (pointer)
+            //     pointer
+            //         .fetch(opts)
+            //         .then((blogContent) => {
+            //             blogContent.setACL(acl);
+            //             return blogContent.save(null, opts);
+            //         })
+            //         .catch(console.error);
+            // utils.fetchIfNotNull(
+            //     object.get("blogContent"),
+            //     opts,
+            //     (blogContent) => {
+            //         blogContent.setACL(acl);
+            //         return blogContent.save(null, opts);
+            //     },
+            //     console.error
+            // );
             object
                 .get("blogContent")
-                .fetch(opts)
-                .then((blogContent) => {
+                ?.then((blogContent) => {
                     blogContent.setACL(acl);
-                    blogContent.save(null, opts);
-                });
-            const queryStep = new Parse.Query("Step");
-            utils
-                .setAllACL(queryStep, "blog", object, acl, opts)
+                    return blogContent.save(null, opts);
+                })
                 .catch(console.error);
+            // Only propagate ACL to Step if Blog is not new
+            // else let Step handle ACL itself
+            if (!object.isNew()) {
+                const queryStep = new Parse.Query("Step");
+                utils
+                    .setAllACL(queryStep, "blog", object, acl, opts)
+                    .catch(console.error);
+            }
         }
     },
     {
@@ -47,9 +67,8 @@ Parse.Cloud.beforeSave(
     }
 );
 
-Parse.Cloud.beforeDelete("Blog", (req) => {
-    const { user, master, object } = req;
-    opts = master
+Parse.Cloud.beforeDelete("Blog", ({ user, master, object }) => {
+    const opts = master
         ? { useMasterKey: true }
         : { sessionToken: user.getSessionToken() };
     // Cascade delete to Step and BlogContent
@@ -57,10 +76,11 @@ Parse.Cloud.beforeDelete("Blog", (req) => {
     utils.destroyAll(queryStep, "blog", object, opts).catch(console.error);
     object
         .get("blogContent")
-        .fetch(opts)
-        .then((blogContent) => {
-            blogContent.destroy(opts).catch(console.error);
-        });
+        ?.then((blogContent) => {
+            blogContent.setACL(acl);
+            return blogContent.save(null, opts);
+        })
+        .catch(console.error);
     utils.destroyFile(object.get("img"));
     // DEPRECATED
     // const queryIngredient = new Parse.Query("Ingredient");
@@ -69,10 +89,12 @@ Parse.Cloud.beforeDelete("Blog", (req) => {
 
 Parse.Cloud.beforeSave(
     "Step",
-    (req) => {
-        const { original, object } = req;
+    ({ user, original, object }) => {
         if (object.isNew()) {
-            object.setACL(utils.authorACL(req.user));
+            let acl = utils.authorACL(user);
+            const pointer = object.get("blog");
+            if (pointer) pointer.fetch();
+            object.setACL(acl);
         } else {
             utils.replaceFile(original.get("img"), object.get("img"));
         }
