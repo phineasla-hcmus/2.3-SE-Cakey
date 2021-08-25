@@ -21,6 +21,13 @@ function destroyAll(query, key, obj, opts) {
     });
 }
 
+function setAllACL(query, key, obj, acl, opts) {
+    query.equalTo(key, obj);
+    return query.findAll(opts).then((res) => {
+        return res.setACL(acl);
+    });
+}
+
 function authorACL(user, acl = new Parse.ACL()) {
     acl.setWriteAccess(user, true);
     acl.setPublicReadAccess(true);
@@ -38,6 +45,7 @@ module.exports = {
     replaceFile,
     destroyFile,
     destroyAll,
+    setAllACL,
     authorACL,
     premiumACL,
 };

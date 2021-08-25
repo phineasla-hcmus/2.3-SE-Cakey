@@ -13,9 +13,21 @@ Parse.Cloud.beforeSave(
             utils.destroyFile(original.get("img"));
         }
         if (object.dirty("premium")) {
+            const opts = { useMasterKey: true };
             // TODO change to blogContent, not blog
             acl = utils.premiumACL(acl, object.get("premium"));
-            object.setACL(acl);
+            // object.setACL(acl);
+            // Propagate ACL to Step and BlogContent
+            object
+                .get("blogContent")
+                .fetch(opts)
+                .then((blogContent) => {
+                    blogContent.setACL(acl);
+                });
+            const queryStep = new Parse.Query("Step");
+            utils
+                .setAllACL(queryStep, "blog", object, acl, opts)
+                .catch(console.error);
         }
     },
     {
@@ -32,22 +44,23 @@ Parse.Cloud.beforeSave(
 );
 
 Parse.Cloud.beforeDelete("Blog", (req) => {
-    opts = req.master
+    const { user, master, object } = req;
+    opts = master
         ? { useMasterKey: true }
-        : { sessionToken: req.user.getSessionToken() };
+        : { sessionToken: user.getSessionToken() };
     // Cascade delete to Step and BlogContent
     const queryStep = new Parse.Query("Step");
-    utils.destroyAll(queryStep, "blog", req.object).catch(console.error);
-    req.object
+    utils.destroyAll(queryStep, "blog", object, opts).catch(console.error);
+    object
         .get("blogContent")
         .fetch(opts)
         .then((blogContent) => {
             blogContent.destroy(opts).catch(console.error);
         });
+    utils.destroyFile(object.get("img"));
     // DEPRECATED
     // const queryIngredient = new Parse.Query("Ingredient");
     // utils.destroyAll(queryIngredient, "blog", req.object).catch(console.log);
-    utils.destroyFile(req.object.get("img"));
 });
 
 Parse.Cloud.beforeSave(
