@@ -25,10 +25,7 @@ Parse.Cloud.define(
             attrs.blog = blogPointer;
         }
         // Bypass no-write CLP
-        await like.save(attrs, {
-            useMasterKey: true,
-            // sessionToken: user.getSessionToken(),
-        });
+        await like.save(attrs, { useMasterKey: true });
     },
     {
         fields: {
@@ -50,13 +47,18 @@ Parse.Cloud.define(
  */
 Parse.Cloud.define(
     "destroyReactBlog",
-    async ({ params }) => {
+    async ({ user, master, params }) => {
+        const opts = master
+            ? { useMasterKey: true }
+            : { sessionToken: user.getSessionToken() };
+        const blogPointer = Blog.createWithoutData(params.blogId);
         const queryLike = new Parse.Query("Like");
-        queryLike.equalTo("blog", params.blogId);
-        let like = await queryLike.first();
+        queryLike.equalTo("blog", blogPointer);
+        queryLike.equalTo("user", user);
+        let like = await queryLike.first(opts);
         if (like === undefined)
             throw `Like/Dislike not found for Blog ${params.blogId}`;
-        await like.destroy();
+        await like.destroy({ useMasterKey: true });
     },
     {
         fields: {
@@ -113,8 +115,8 @@ Parse.Cloud.beforeSave(
             blog: { required: true, constant: true },
             type: { required: true },
         },
-        // requireUser: true,
         requireMaster: true,
+        validateMasterKey: true,
     }
 );
 
@@ -123,11 +125,17 @@ Parse.Cloud.beforeSave(
  * CLP write is disabled for all user to prevent multiple likes
  * (unique index is not supported in Parse 4.5.0 (Dec 15, 2020))
  */
-// Parse.Cloud.afterDelete("Like", async ({ object }) => {
-//     // TODO: fetch after get
-//     const blog = await object.get("blog");
-//     if (blog === undefined) throw `Invalid Blog for Like ${object.id}`;
-//     if (object.get("type")) blog.decrement("like");
-//     else blog.decrement("dislike");
-//     blog.save(null, { useMasterKey: true });
-// });
+Parse.Cloud.afterDelete(
+    "Like",
+    async ({ object }) => {
+        const user = object.get("user");
+        const blog = await object
+            .get("blog")
+            ?.fetch({ sessionToken: user.getSessionToken() });
+        if (!blog) throw `Invalid Blog for Like ${object.id}`;
+        if (object.get("type")) blog.decrement("like");
+        else blog.decrement("dislike");
+        blog.save(null, { useMasterKey: true });
+    },
+    { requireMaster: true }
+);
