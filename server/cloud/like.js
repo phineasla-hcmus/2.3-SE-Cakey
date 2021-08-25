@@ -16,17 +16,13 @@ Parse.Cloud.define(
         const queryLike = new Parse.Query("Like");
         queryLike.equalTo("blog", blogPointer);
         queryLike.equalTo("user", user);
-        console.log("QUERYING LIKE");
         let like = await queryLike.first(opts);
-        console.log("DONE");
         let attrs = { type: params.type };
         if (!like) {
-            console.log("OH WOW, NEW LIKE");
             like = new Like();
             attrs.user = user;
             attrs.blog = blogPointer;
         }
-        console.log("SAVING");
         // Bypass no-write CLP
         await like.save(attrs, { useMasterKey: true });
     },
@@ -41,7 +37,7 @@ Parse.Cloud.define(
                 type: Boolean,
             },
         },
-        // requireUser: true,
+        requireUser: true,
     }
 );
 
@@ -67,7 +63,7 @@ Parse.Cloud.define(
         fields: {
             blogId: { required: true, type: String },
         },
-        // requireUser: true,
+        requireUser: true,
     }
 );
 
@@ -75,11 +71,12 @@ Parse.Cloud.define(
  * Currently can only be called through "reactBlog",
  * CLP write is disabled for all user to prevent multiple likes
  * (unique index is not supported in Parse 4.5.0 (Dec 15, 2020))
+ * https://github.com/parse-community/parse-server/issues/6512
  */
 Parse.Cloud.beforeSave(
     "Like",
     async ({ original, object }) => {
-        console.log("IN BEFORESAVE");
+        // user.getSessionToken() does not work
         const user = object.get("user");
         // Not the prettiest but it gets the job done
         const keys = ["dislike", "like"];
@@ -90,11 +87,10 @@ Parse.Cloud.beforeSave(
             counters[original.get("type") ? 1 : 0]--;
         }
         counters[object.get("type") ? 1 : 0]++;
-        console.log(`USER TOKEN: ${user.getSessionToken()}`);
         const blog = await object
             .get("blog")
-            ?.fetch({ sessionToken: user.getSessionToken() });
-        console.log("DONE FETCH BLOG");
+            // Ignoring all blog ACL and CLP
+            ?.fetch({ useMasterKey: true });
         if (blog) {
             for (let i = 0; i < counters.length; i++) {
                 if (counters[i] > 0) blog.increment(keys[i]);
@@ -118,6 +114,7 @@ Parse.Cloud.beforeSave(
  * Currently can only be called through "destroyReactBlog",
  * CLP write is disabled for all user to prevent multiple likes
  * (unique index is not supported in Parse 4.5.0 (Dec 15, 2020))
+ * https://github.com/parse-community/parse-server/issues/6512
  */
 Parse.Cloud.afterDelete(
     "Like",
@@ -125,7 +122,8 @@ Parse.Cloud.afterDelete(
         const user = object.get("user");
         const blog = await object
             .get("blog")
-            ?.fetch({ sessionToken: user.getSessionToken() });
+            // Ignoring all blog ACL and CLP
+            ?.fetch({ useMasterKey: true });
         if (!blog) throw `Invalid Blog for Like ${object.id}`;
         if (object.get("type")) blog.decrement("like");
         else blog.decrement("dislike");
