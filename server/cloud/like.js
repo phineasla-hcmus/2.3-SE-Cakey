@@ -16,9 +16,12 @@ Parse.Cloud.define(
         const queryLike = new Parse.Query("Like");
         queryLike.equalTo("blog", blogPointer);
         queryLike.equalTo("user", user);
+        console.log("QUERYING LIKE");
         let like = await queryLike.first(opts);
+        console.log("DONE");
         let attrs = { type: params.type };
         if (!like) {
+            console.log("OH WOW, NEW LIKE");
             like = new Like();
             attrs.user = user;
             attrs.blog = blogPointer;
