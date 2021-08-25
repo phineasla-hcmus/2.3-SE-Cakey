@@ -6,7 +6,8 @@ Parse.Cloud.beforeSave(
         let acl = object.getACL();
         if (object.isNew()) {
             if (!master) {
-                utils.authorACL(user, acl);
+                acl = utils.authorACL(user);
+                object.setACL(acl);
             }
         } else if (object.dirty("img")) {
             utils.destroyFile(original.get("img"));
@@ -14,32 +15,15 @@ Parse.Cloud.beforeSave(
         if (object.dirty("premium")) {
             const opts = { useMasterKey: true };
             acl = utils.premiumACL(
-                // req.user = undefined if request comes from Parse Dashboard
+                // req.user is undefined if request comes from Parse Dashboard
                 new Parse.ACL(user || object.get("author")),
                 object.get("premium")
             );
             // Propagate ACL to BlogContent
-            // const pointer = object.get("blogContent");
-            // if (pointer)
-            //     pointer
-            //         .fetch(opts)
-            //         .then((blogContent) => {
-            //             blogContent.setACL(acl);
-            //             return blogContent.save(null, opts);
-            //         })
-            //         .catch(console.error);
-            // utils.fetchIfNotNull(
-            //     object.get("blogContent"),
-            //     opts,
-            //     (blogContent) => {
-            //         blogContent.setACL(acl);
-            //         return blogContent.save(null, opts);
-            //     },
-            //     console.error
-            // );
             object
                 .get("blogContent")
-                ?.then((blogContent) => {
+                ?.fetch(opts)
+                .then((blogContent) => {
                     blogContent.setACL(acl);
                     return blogContent.save(null, opts);
                 })
@@ -76,9 +60,9 @@ Parse.Cloud.beforeDelete("Blog", ({ user, master, object }) => {
     utils.destroyAll(queryStep, "blog", object, opts).catch(console.error);
     object
         .get("blogContent")
-        ?.then((blogContent) => {
-            blogContent.setACL(acl);
-            return blogContent.save(null, opts);
+        ?.fetch(opts)
+        .then((blogContent) => {
+            return blogContent.destroy(opts);
         })
         .catch(console.error);
     utils.destroyFile(object.get("img"));
@@ -89,11 +73,14 @@ Parse.Cloud.beforeDelete("Blog", ({ user, master, object }) => {
 
 Parse.Cloud.beforeSave(
     "Step",
-    ({ user, original, object }) => {
+    async ({ user, master, original, object }) => {
         if (object.isNew()) {
+            const opts = master
+                ? { useMasterKey: true }
+                : { sessionToken: user.getSessionToken() };
             let acl = utils.authorACL(user);
-            const pointer = object.get("blog");
-            if (pointer) pointer.fetch();
+            const blog = await object.get("blog")?.fetch(opts);
+            if (blog) utils.premiumACL(acl, blog.get("premium"));
             object.setACL(acl);
         } else {
             utils.replaceFile(original.get("img"), object.get("img"));
