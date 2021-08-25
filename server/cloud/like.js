@@ -90,6 +90,7 @@ Parse.Cloud.beforeSave(
             counters[original.get("type") ? 1 : 0]--;
         }
         counters[object.get("type") ? 1 : 0]++;
+        console.log(`USER TOKEN: ${user.getSessionToken()}`);
         const blog = await object
             .get("blog")
             ?.fetch({ sessionToken: user.getSessionToken() });
