@@ -9,7 +9,8 @@ Parse.Cloud.beforeSave(
                 acl = utils.authorACL(user);
                 object.setACL(acl);
             }
-        } else if (object.dirty("img")) {
+        }
+        if (object.dirty("img")) {
             utils.destroyFile(original.get("img"));
         }
         if (object.dirty("premium")) {
