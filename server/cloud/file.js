@@ -4,7 +4,7 @@ Parse.Cloud.beforeSaveFile((req) => {
 });
 
 Parse.Cloud.afterSaveFile(async (req) => {
-    const { file, fileSize, user } = req;
+    const { user, master, file, fileSize } = req;
     const opts = master
         ? { useMasterKey: true }
         : { sessionToken: user.getSessionToken() };
