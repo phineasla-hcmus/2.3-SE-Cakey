@@ -80,7 +80,7 @@ Parse.Cloud.beforeSave(
             if (blog) utils.premiumACL(acl, blog.get("premium"));
             object.setACL(acl);
         } else {
-            utils.replaceFile(original.get("img"), object.get("img"));
+            utils.destroyFile(object.get("img"));
         }
     },
     {

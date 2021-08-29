@@ -4,3 +4,5 @@ require("./blog");
 require("./course");
 require("./level");
 require("./like");
+
+require("./file");
