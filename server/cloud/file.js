@@ -1,6 +1,6 @@
 Parse.Cloud.beforeSaveFile((req) => {
-    const { file, user } = req;
-    console.log(`SAVING FILE ${file.name()} BY USER ${user}`);
+    const { user, file } = req;
+    console.log(`SAVING FILE ${file.name()} BY USER ${user?.id}`);
 });
 
 Parse.Cloud.afterSaveFile(async (req) => {
@@ -20,8 +20,8 @@ Parse.Cloud.afterSaveFile(async (req) => {
 });
 
 Parse.Cloud.beforeDeleteFile((req) => {
-    const { file, user } = req;
-    console.log(`DELETING FILE ${file.name()} BY USER ${user}`);
+    const { user, file } = req;
+    console.log(`DELETING FILE ${file.name()} BY USER ${user?.id}`);
 });
 
 Parse.Cloud.afterDeleteFile(async (req) => {
