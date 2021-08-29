@@ -19,7 +19,7 @@ Parse.Cloud.afterSaveFile(async (req) => {
     );
 });
 
-Parse.Cloud.beforeSaveFile((req) => {
+Parse.Cloud.beforeDeleteFile((req) => {
     const { file, user } = req;
     console.log(`DELETING FILE ${file.name()} BY USER ${user}`);
 });
