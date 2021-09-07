@@ -2,9 +2,8 @@ const utils = require("./utils");
 
 Parse.Cloud.beforeSave("Level", (req) => {
     const { original, object } = req;
-    if (object.isNew()) {
-    } else {
-        utils.replaceFile(original.get("icon"), object.get("icon"));
+    if (!object.isNew() && object.dirty("icon")) {
+        utils.destroyFile(original.get("icon"));
     }
 });
 
