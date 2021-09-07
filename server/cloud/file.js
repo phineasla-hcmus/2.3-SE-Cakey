@@ -41,6 +41,7 @@ Parse.Cloud.beforeSave("FilePointer", undefined, {
         file: disableUpdate,
         fileSize: disableUpdate,
     },
+    requireMaster: true,
     validateMasterKey: true,
 });
 
