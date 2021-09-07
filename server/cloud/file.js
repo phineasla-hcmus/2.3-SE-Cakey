@@ -1,21 +1,24 @@
+const useMasterKey = { useMasterKey: true };
+const disableUpdate = {
+    constant: true,
+    error: "Modify 'FilePointer' is not allowed",
+};
+
 Parse.Cloud.beforeSaveFile((req) => {
     const { user, file } = req;
     console.log(`SAVING FILE ${file.name()} BY USER ${user?.id}`);
 });
 
 Parse.Cloud.afterSaveFile(async (req) => {
-    const { user, master, file, fileSize } = req;
-    const opts = master
-        ? { useMasterKey: true }
-        : { sessionToken: user.getSessionToken() };
-    const fileMetadata = new Parse.Object("FileMetadata");
-    await fileMetadata.save(
+    const { user, file, fileSize } = req;
+    const filePointer = new Parse.Object("FilePointer");
+    await filePointer.save(
         {
-            fileName: file.name(),
-            fileSize: fileSize,
             user: user,
+            file: file,
+            fileSize: fileSize,
         },
-        opts
+        useMasterKey
     );
 });
 
@@ -26,9 +29,22 @@ Parse.Cloud.beforeDeleteFile((req) => {
 
 Parse.Cloud.afterDeleteFile(async (req) => {
     const { file } = req;
-    const opts = { useMasterKey: true };
-    const query = new Parse.Query("FileMetadata");
-    query.equalTo("fileName", file.name());
-    const fileMetadata = await query.first(opts);
-    await fileMetadata.destroy(opts);
+    const query = new Parse.Query("FilePointer");
+    query.equalTo("file", file);
+    const filePointer = await query.first(useMasterKey);
+    if (filePointer) await filePointer.destroy(useMasterKey);
+});
+
+Parse.Cloud.beforeSave("FilePointer", undefined, {
+    fields: {
+        user: disableUpdate,
+        file: disableUpdate,
+        fileSize: disableUpdate,
+    },
+    validateMasterKey: true,
+});
+
+Parse.Cloud.beforeDelete("FilePointer", (req) => {
+    const { object } = req;
+    throw "'FilePointer' can only be deleted after delete file";
 });
