@@ -30,7 +30,7 @@ Parse.Cloud.beforeDeleteFile((req) => {
 Parse.Cloud.afterDeleteFile(async (req) => {
     const { file } = req;
     const query = new Parse.Query("FilePointer");
-    query.equalTo("file", file);
+    query.equalTo("file", file.name());
     const filePointer = await query.first(useMasterKey);
     if (filePointer) await filePointer.destroy(useMasterKey);
 });
