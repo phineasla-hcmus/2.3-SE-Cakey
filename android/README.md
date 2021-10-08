@@ -8,8 +8,3 @@ Welcome to Cakey, a community for baking lover, people just like you share thous
 | 19127097 | Duc Hieu   |
 | 19127082 | Tat Truong |
 | 19127511 | Hong Phuc  |
-
-## Server Access
-[Admin dashboard](https://cakey-se.herokuapp.com/dashboard)   
-Username: admin  
-Password: cakey.popcorn.se  
